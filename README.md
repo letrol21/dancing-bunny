@@ -9,7 +9,7 @@
  2. Hit copy
  3. Open one of these below:
    - [w3schools tryit](https://www.w3schools.com/html/tryit.asp?filename=tryhtml_basic)
-   - code.org (sign in --> new project --> view all projects --> view full list --> web lab)
+   - [code.org](code.org) (sign in --> new project --> view all projects --> view full list --> web lab)
    - [One Compiler](https://onecompiler.com/html)
  4. Paste it into there
  5. Click Run
