@@ -1,7 +1,7 @@
 # ***Dancing Bunny Games Network***
 (GN-db)
 
-[letrol21.github.io/dancing-bunny/](https://letrol21.github.io/dancing-bunny/)
+<a href="https://letrol21.github.io/dancing-bunny/" target="_blank" rel="noopener noreferrer">letrol21.github.io/dancing-bunny</a>
 
 ## Directions (if above link is blocked)
 
