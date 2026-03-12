@@ -1,9 +1,9 @@
 # ***Dancing Bunny Games Network***
 (GN-db)
 
+[letrol21.github.io/dancing-bunny/](letrol21.github.io/dancing-bunny/)
 
-
-## Directions
+## Directions (if above link is blocked)
 
  1. Open [simpleopen.html](https://github.com/letrol21/dancing-bunny/blob/main/index.html)
  2. Hit copy
