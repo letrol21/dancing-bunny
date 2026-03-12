@@ -5,7 +5,7 @@
 
 ## Directions
 
- 1. Open [simpleopen.html](https://github.com/letrol21/dancing-bunny/blob/main/simpleopen.html)
+ 1. Open [simpleopen.html](https://github.com/letrol21/dancing-bunny/blob/main/index.html)
  2. Hit copy
  3. Open one of these below:
    - [w3schools tryit](https://www.w3schools.com/html/tryit.asp?filename=tryhtml_basic)
