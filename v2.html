@@ -2900,7 +2900,7 @@
 
             const starBtn = document.createElement("button");
             starBtn.className = "star-btn" + (starred.has(file) ? " starred" : "");
-            starBtn.textContent = "*";
+            starBtn.textContent = "⭑";
             starBtn.title = starred.has(file) ? "Remove from favorites" : "Add to favorites";
             starBtn.dataset.file = file;
             starBtn.onclick = (e) => {
