@@ -13,7 +13,7 @@
    - [One Compiler](https://onecompiler.com/html)
  4. Paste it into there
  5. Click Run
- 6. Click "math homework"
+
 
 ## Google Doc:
 https://docs.google.com/document/d/1-vd6L8lEgdGTovOvUa1HWmPYGDT8jnk9VKwftAAi644/edit?tab=t.0
