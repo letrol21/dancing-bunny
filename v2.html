@@ -276,6 +276,48 @@
         </h2>
         <h2>
             NEW!  Run HTML Code:
+            <button onclick="
+                const htmlContent = `
+                    <!DOCTYPE html>
+                    <html>
+                    <head>
+                        <title>Run HTML Code</title>
+                        <style>
+                            body { font-family: sans-serif; padding: 20px; background: #f4f4f4; }
+                            textarea { width: 100%; height: 200px; margin-bottom: 10px; border: 1px solid #ccc; border-radius: 4px; }
+                            button { padding: 10px 15px; background-color: #03a5fc; color: white; border: none; cursor: pointer; font-family: 'Comic Sans MS', cursive; border-radius: 5px; }
+                            button:hover { background-color: #006094; }
+                        </style>
+                    </head>
+                    <body>
+                        <h2>Paste HTML Code Below</h2>
+                        <textarea id='htmlCodeInput'></textarea>
+                        <br>
+                        <button onclick='runCode()'>Run Code in New Tab</button>
+            
+                        <script>
+                            function runCode() {
+                                const code = document.getElementById(\'htmlCodeInput\').value;
+                                const win = window.open(\'\', \'_blank\');
+                                if (win) {
+                                    win.document.write(code);
+                                    win.document.close();
+                                } else {
+                                    alert(\'Pop-up blocked!\');
+                                }
+                            }
+                        <\/script>
+                    </body>
+                    </html>`;
+            
+                const newWindow = window.open('', '_blank');
+                if (newWindow) {
+                    newWindow.document.write(htmlContent);
+                    newWindow.document.close();
+                }
+            ">
+                Open Code Runner
+        </button>
         </h2>
         <div class="search-container">
             <input type="text" id="gameSearch" placeholder="Search for a game..." onkeyup="filterGames()">
