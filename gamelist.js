@@ -1,4 +1,5 @@
-"cl1",
+let files = [
+            "cl1",
             "cl10bullets",
             "cl10minutestildawn",
             "cl10morebullets",
@@ -2607,3 +2608,4 @@
             "clunownking",
             "clwinterolympics",
             "clwolfchild",
+];
