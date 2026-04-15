@@ -39,6 +39,24 @@
             flex-direction: column;
         }
 
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(255, 255, 255, 0.45);
+        }
+
         button,
         input {
             font-family: inherit;
@@ -151,17 +169,25 @@
             position: fixed;
             left: 0;
             top: var(--topbar-h);
-            width: 120px;
-            height: 100;
-            background: rgba(86, 26, 134, 0.94);
-            backdrop-filter: blur(10px);
-            padding: 16px 8px;
+            width: 110px;
+            height: calc(100vh - var(--topbar-h));
+
+            overflow-y: auto;
+            overflow-x: hidden;
+
             display: flex;
             flex-direction: column;
             gap: 8px;
-            overflow-y: auto;
+
+            background: rgba(86, 26, 134, 0.94);
+            backdrop-filter: blur(10px);
+            padding: 16px 8px;
+
             box-shadow: 2px 0 10px rgba(0, 0, 0, 0.3);
             z-index: 1000;
+
+            /* IMPORTANT FIX */
+            overscroll-behavior: contain;
         }
 
         .sidebar::-webkit-scrollbar {
@@ -385,14 +411,6 @@
             margin: 0;
         }
 
-        .runner-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            min-height: 0;
-            flex: 1;
-        }
-
         .runner-column {
             min-height: 0;
             display: flex;
@@ -443,6 +461,19 @@
             background: white;
         }
 
+        #open-runner-btn {
+            font-family: Comic Sans MS, sans-serif;
+            background: none;
+            border: 2px solid rgba(176, 0, 230 0.25);
+            border-radius: 8px;
+            color: #b000e6;
+            font-size: 18px;
+            cursor: pointer;
+            padding: 0 12px;
+            transition: all 0.2s ease;
+            flex-shrink: 0;
+        }
+
         @media (max-width: 768px) {
             :root {
                 --sidebar-w: 66px;
@@ -488,7 +519,7 @@
                 </h2>
 
                 <h2 class="subheading">
-                    NEW! Run HTML Code:
+                    Run HTML Code:
                     <button id="open-runner-btn" style="line-height: 2; margin-left: 8px;">
                         Open Code Runner
                     </button>
@@ -566,14 +597,6 @@
         function activateTab(id) {
             setActiveTabButton(id);
             setActivePanel(id);
-
-            if (id === "home") {
-                document.title = "Home - Classroom";
-                return;
-            }
-
-            const tab = tabs.get(id);
-            if (tab) document.title = `${tab.title} - Classroom`;
         }
 
         function closeTab(id) {
@@ -692,6 +715,52 @@
             }
         }
 
+        function openHtmlPreviewTab(htmlCode) {
+            const id = "html-preview";
+            const title = "HTML Code";
+
+            // Reuse the same preview tab if it already exists
+            if (tabs.has(id)) {
+                const existing = tabs.get(id);
+                existing.panel.innerHTML = "";
+                const iframe = document.createElement("iframe");
+                iframe.className = "game-frame";
+                iframe.setAttribute(
+                    "sandbox",
+                    "allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+                );
+                iframe.referrerPolicy = "no-referrer";
+                iframe.srcdoc = injectBaseHref(htmlCode, document.baseURI);
+                existing.panel.appendChild(iframe);
+                activateTab(id);
+                return;
+            }
+
+            const button = createTabButton(id, title, true);
+            tabBar.appendChild(button);
+
+            const panel = document.createElement("div");
+            panel.className = "panel game-pane";
+            panel.id = `panel-${id}`;
+
+            const iframe = document.createElement("iframe");
+            iframe.className = "game-frame";
+            iframe.setAttribute(
+                "sandbox",
+                "allow-scripts allow-same-origin allow-forms allow-popups allow-modals"
+            );
+            iframe.referrerPolicy = "no-referrer";
+            iframe.srcdoc = injectBaseHref(htmlCode, document.baseURI);
+
+            panel.appendChild(iframe);
+            contentArea.appendChild(panel);
+
+            const tab = { id, title, button, panel };
+            tabs.set(id, tab);
+            tabOrder.push(id);
+            activateTab(id);
+        }
+
         function openRunnerTab() {
             const id = "runner";
             const title = "HTML Runner";
@@ -712,10 +781,10 @@
             wrapper.className = "runner-pane";
 
             wrapper.innerHTML = `
-        <h2>Run HTML Code</h2>
-        <div class="runner-grid">
-          <div class="runner-column">
-            <textarea class="runner-textarea" id="runner-code">&lt;!DOCTYPE html&gt;
+    <h2>Run HTML Code</h2>
+    <div class="runner-grid">
+      <div class="runner-column">
+        <textarea class="runner-textarea" id="runner-code">&lt;!DOCTYPE html&gt;
 &lt;html&gt;
 &lt;head&gt;
   &lt;meta charset="UTF-8"&gt;
@@ -725,16 +794,13 @@
   &lt;h1&gt;Hello!&lt;/h1&gt;
 &lt;/body&gt;
 &lt;/html&gt;</textarea>
-            <div class="runner-controls">
-              <button id="runner-run-btn">Run in Preview</button>
-              <button id="runner-clear-btn">Clear</button>
-            </div>
-          </div>
-          <div class="runner-column">
-            <iframe class="runner-frame" id="runner-frame" sandbox="allow-scripts allow-forms allow-popups allow-modals allow-same-origin"></iframe>
-          </div>
+        <div class="runner-controls">
+          <button id="runner-run-btn">Open in New Tab</button>
+          <button id="runner-clear-btn">Clear</button>
         </div>
-      `;
+      </div>
+    </div>
+  `;
 
             panel.appendChild(wrapper);
             contentArea.appendChild(panel);
@@ -745,21 +811,16 @@
             activateTab(id);
 
             const code = panel.querySelector("#runner-code");
-            const frame = panel.querySelector("#runner-frame");
             const runBtn = panel.querySelector("#runner-run-btn");
             const clearBtn = panel.querySelector("#runner-clear-btn");
 
-            function renderPreview() {
-                const html = injectBaseHref(code.value, document.baseURI);
-                frame.srcdoc = html;
-            }
+            runBtn.onclick = () => {
+                openHtmlPreviewTab(code.value);
+            };
 
-            runBtn.onclick = renderPreview;
             clearBtn.onclick = () => {
                 code.value = "";
             };
-
-            renderPreview();
         }
 
         function makeGameRow(file) {
