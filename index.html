@@ -1,11 +1,89 @@
-<html>
-  <head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - Classroom</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
+
+        body,
+        html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #2f4a69;
+            background-image:
+                radial-gradient(circle at 20% 30%, #0d0d1a 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, #0a0514 0%, transparent 40%),
+                radial-gradient(circle at 50% 50%, #050508 0%, 100%);
+            font-family: 'Inter', sans-serif;
+        }
+
+        #bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 0, 0, 0) 20%, rgba(0, 0, 0, 0.7) 100%);
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            text-align: center;
+        }
+
+        .glow-button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 3rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5rem;
+            cursor: pointer;
+            outline: none;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            /* Default Glow */
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5),
+                0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .glow-button:hover {
+            /* Intense Glow on Hover */
+            text-shadow: 0 0 15px rgba(255, 255, 255, 1),
+                0 0 30px rgba(255, 255, 255, 0.8),
+                0 0 50px rgba(100, 150, 255, 0.6);
+            letter-spacing: 0.7rem;
+            /* Slight expansion effect */
+        }
+
+        canvas {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+    </style>
     <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABsklEQVQYV6WPMY9MYRSGnzO5K5mrsczINCujkBh3ihU1CX9BMSsKtqTQ6mzDr5BFQiLRSkRoFRu7icIQ3YoCESHL3DEbmfMqzjc3d1BxmvPlS97nPK9J4n8mm75Yvsz00zkzYTYPkwypAbJ4e2xkyBuw0LpvPzfaMpURrgMUAIhgBZGBGgGznIzpGMx4OW7xatLGbBYGJJTecoHHu2h+pZ/vgP8gQ4YQw3GbB1+OQgIgkS80kYvR7igBHLkzaImi+Q1kZKEJuJB71WDvnpy1M1dBsPb0BqNJiWpGqSWN6GRJ05ELubiwvEJ33xLdxSVWT5xHVRclw8ilCoY89STwt7fu0V08BMD687thKM1biKhgM3CtwmhScu3xdSRR7pZVuPInDicDknoA+p0eRecY/U4PgOGH12y83WT783aAHDSrIBlAquBcOXmJ00dOUZ+i02Nw/CwPh4+4+exWfMqQjExuYIDC4vdwfQ7v786FEWSoAYiiucPgwDuGb9bnQlVloCw/stJ+T5F/j4MyrHxyUKCw+NsIIK4pbbAAy8gkWwUu2uzSDKT6+jMIINkdU93xH+YXTrImgXmBBtYAAAAASUVORK5CYII=" />
-  </head>
-  <body>
-    <button
-      onclick='fetch("https://raw.githubusercontent.com/letrol21/dancing-bunny/refs/heads/main/v2.html")
+</head>
+
+<body>
+    <div id="bg-overlay"></div>
+    <div class="container">
+        <button class="glow-button" onclick='fetch("https://raw.githubusercontent.com/letrol21/dancing-bunny/refs/heads/main/v2.html")
         .then(response => response.text())
         .then(text => {
           const newWin = window.open("about:blank", "_blank");
@@ -14,11 +92,103 @@
             newWin.document.write(text);
             newWin.document.close();
           }
-        });'
-      style="width: 100%; height: 100%; font-size: 14; font-family: Comic Sans MS;">
-      bookmark this page <br><br>
-      click to open
-    </button>
-  </body>
+        });'>ENTER</button>
+    </div>
+    <canvas id="starfield"></canvas>
+    <script>
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+
+        let particles = [];
+        const particleCount = 140;
+        const connectionDistance = 130;
+        const mouse = { x: null, y: null, radius: 180 };
+
+        window.addEventListener('mousemove', (e) => {
+            mouse.x = e.x;
+            mouse.y = e.y;
+        });
+
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            particles = [];
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1.8 + 0.5,
+                    speedX: (Math.random() - 0.5) * 0.4,
+                    speedY: (Math.random() - 0.5) * 0.4
+                });
+            }
+        }
+
+        function drawLines() {
+            for (let a = 0; a < particles.length; a++) {
+                for (let b = a + 1; b < particles.length; b++) {
+                    let dx = particles[a].x - particles[b].x;
+                    let dy = particles[a].y - particles[b].y;
+                    let distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < connectionDistance) {
+                        let opacity = 1 - (distance / connectionDistance);
+                        ctx.strokeStyle = `rgba(150, 180, 255, ${opacity * 0.15})`;
+                        ctx.lineWidth = 0.8;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(particles[b].x, particles[b].y);
+                        ctx.stroke();
+                    }
+                }
+
+                if (mouse.x !== null) {
+                    let mdx = particles[a].x - mouse.x;
+                    let mdy = particles[a].y - mouse.y;
+                    let mDist = Math.sqrt(mdx * mdx + mdy * mdy);
+
+                    if (mDist < mouse.radius) {
+                        let mOpacity = 1 - (mDist / mouse.radius);
+                        ctx.strokeStyle = `rgba(200, 220, 255, ${mOpacity * 0.4})`;
+                        ctx.lineWidth = 1.2;
+                        ctx.beginPath();
+                        ctx.moveTo(particles[a].x, particles[a].y);
+                        ctx.lineTo(mouse.x, mouse.y);
+                        ctx.stroke();
+                    }
+                }
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            particles.forEach(p => {
+                ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+                ctx.beginPath();
+                ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+                ctx.fill();
+
+                p.x += p.speedX;
+                p.y += p.speedY;
+
+                if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+            });
+
+            drawLines();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', init);
+        init();
+        animate();
+    </script>
+</body>
+
 </html>
- 
